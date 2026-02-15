@@ -3,13 +3,13 @@
 using namespace std;
 
 class Client {
-
+//attributes
 	string name, password;
 	int id;
 	double balance;
 
 public:
-
+//settter and getter
 	void setName(string name) {
 		(name >= "a" && name <= "z") || (name >= "A" && name <= "Z") ? cout << "valid name\n" : cout << "invalid name\n";
 		(name.size() >= 3 && name.size() <= 20) ? cout << "valid name\n" : cout << "invalid name\n";
@@ -39,3 +39,36 @@ public:
 	int getId() {
 		return id;
 	}
+// Deposit function
+void deposit(double amount) {
+    if (amount > 0) {
+        balance += amount;
+    }
+}
+// Withdraw function
+bool withdraw(double amount) {
+    if (amount > 0 && amount <= balance) {
+        balance -= amount;
+        return true;
+    }
+    return false;
+}
+// Transfer money to another client
+bool transferTo(double amount, Client& otherClient) {
+    if (withdraw(amount)) {
+        otherClient.deposit(amount);
+        return true;
+    }
+    return false;
+}
+// Check balance
+double checkBalance() {
+    return balance;
+}
+// Display client data
+void display() {
+    cout << "Client ID: " << id << endl;
+    cout << "Client Name: " << name << endl;
+    cout << "Balance: " << balance << endl;
+}
+};

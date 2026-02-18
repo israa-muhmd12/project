@@ -141,3 +141,117 @@ public:
         cout << "Salary: " << salary << endl;
     }
 };
+
+/* ================= Validation Class ================= */
+
+class Validation {
+public:
+
+    static bool isValidName(string name) {
+
+        if (name.length() < 3 || name.length() > 20)
+            return false;
+
+        for (int i = 0; i < name.length(); i++) {
+
+     
+if (!((name[i] >= 'A' && name[i] <= 'Z') ||
+                  (name[i] >= 'a' && name[i] <= 'z'))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    static bool isValidPassword(string password) {
+
+        if (password.length() < 8 || password.length() > 20)
+            return false;
+
+        for (int i = 0; i < password.length(); i++) {
+
+ if (password[i] == ' ')
+                return false;
+        }
+        return true;
+    }
+
+    static bool isValidBalance(double balance) {
+        return balance >= 1500;
+    }
+
+    static bool isValidSalary(double salary) {
+        return salary >= 5000;
+    }
+};
+
+
+/* ================= Person Class ================= */
+
+class Person {
+protected:
+    int id;
+    string name;
+    string password;
+
+public:
+    Person() {
+        id = 0;
+        name = "";
+        password = "";
+    }
+
+    Person(int id, string name, string password) {
+        this->id = id;
+        setName(name);
+        setPassword(password);
+    }
+
+    void setId(int id) {
+        this->id = id;
+    }
+
+    void setName(string name) {
+        if (Validation::isValidName(name)) {
+            this->name = name;
+        }
+        else {
+            cout << "Invalid Name!\n";
+        }
+    }
+
+    void setPassword(string password) {
+        if (Validation::isValidPassword(password)) {
+            this->password = password;
+        }
+        else {
+            cout << "Invalid Password!\n";
+        }
+    }
+
+    int getId() {
+        return id;
+    }
+
+    string getName() {
+        return name;
+    }
+
+    string getPassword() {
+        return password;
+    }
+};
+
+
+/* ================= Test ================= */
+
+int main() {
+
+    Person p1(1, "Nermeen", "password123");
+
+    cout << "ID: " << p1.getId() << endl;
+    cout << "Name: " << p1.getName() << endl;
+    cout << "Password: " << p1.getPassword() << endl;
+
+    return 0;
+}

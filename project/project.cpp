@@ -185,23 +185,22 @@ if (!((name[i] >= 'A' && name[i] <= 'Z') ||
     }
 };
 
+/* ================= Admin Class ================= */
 
-/* ================= Person Class ================= */
-
-class Person {
+class Admin {
 protected:
     int id;
     string name;
     string password;
 
 public:
-    Person() {
+    Admin() {
         id = 0;
         name = "";
         password = "";
     }
 
-    Person(int id, string name, string password) {
+    Admin(int id, string name, string password) {
         this->id = id;
         setName(name);
         setPassword(password);
@@ -255,3 +254,4 @@ int main() {
 
     return 0;
 }
+

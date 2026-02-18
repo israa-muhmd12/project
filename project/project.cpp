@@ -72,9 +72,10 @@ void display() {
     cout << "Balance: " << balance << endl;
 }
 };
+
 class Employee {
 
-private:
+ protected :
     int id;
     string name;
     string password;
@@ -123,7 +124,6 @@ public:
     string getPassword() {
         return password;
     }
-
     void setSalary(double salary) {
 
         if (salary >= 5000) {
@@ -141,6 +141,17 @@ public:
         cout << "Salary: " << salary << endl;
     }
 };
+    class Admin : public Employee {
+    public:
+        void display() {
+            cout << "Admin Data:" << endl;
+            cout << "ID: " << id << endl;
+            cout << "Name: " << name << endl;
+            cout << "Salary: " << salary << endl;
+        }
+
+        Admin() = default;
+    };
 
 /* ================= Validation Class ================= */
 

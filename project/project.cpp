@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <vector>
 using namespace std;
 
 class Client {
@@ -203,7 +204,8 @@ protected:
     int id;
     string name;
     string password;
-
+    vector<Client> clients;
+    vector<Employee> employees;
 public:
     Admin() {
         id = 0;
@@ -249,6 +251,50 @@ public:
 
     string getPassword() {
         return password;
+    }
+    // ====== Clients Management ======
+
+    void addClient(Client c) {
+        clients.push_back(c);
+    }
+
+    Client* searchClient(int id) {
+        for (int i = 0; i < clients.size(); i++) {
+            if (clients[i].getId() == id)
+                return &clients[i];
+        }
+        return nullptr;
+    }
+
+    void listClients() {
+        for (int i = 0; i < clients.size(); i++) {
+            clients[i].display();
+            cout << "------------------\n";
+        }
+    }
+
+    void editClient(int id, string newName) {
+        Client* c = searchClient(id);
+        if (c != nullptr) {
+            c->setName(newName);
+        }
+    }
+
+    // ====== Employees Management ======
+
+    void addEmployee(Employee e) {
+        employees.push_back(e);
+    }
+
+    void getAllEmployees() {
+        for (int i = 0; i < employees.size(); i++) {
+            employees[i].display();
+            cout << "------------------\n";
+        }
+    }
+
+    void removeAllEmployees() {
+        employees.clear();
     }
 };
 

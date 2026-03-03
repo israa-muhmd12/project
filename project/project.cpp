@@ -156,7 +156,9 @@ public:
 
 class Employee : public Person {
 protected:
-    double salary;
+    int id;
+    string name;
+    string password;
 
 public:
     Employee() : Person(), salary(0) {}
@@ -206,6 +208,50 @@ public:
 
     void editClient(int id, string name, string password, double balance) {
         cout << "Edit request for ID " << id << " received.\n";
+    }
+    // ====== Clients Management ======
+
+    void addClient(Client c) {
+        clients.push_back(c);
+    }
+
+    Client* searchClient(int id) {
+        for (int i = 0; i < clients.size(); i++) {
+            if (clients[i].getId() == id)
+                return &clients[i];
+        }
+        return nullptr;
+    }
+
+    void listClients() {
+        for (int i = 0; i < clients.size(); i++) {
+            clients[i].display();
+            cout << "------------------\n";
+        }
+    }
+
+    void editClient(int id, string newName) {
+        Client* c = searchClient(id);
+        if (c != nullptr) {
+            c->setName(newName);
+        }
+    }
+
+    // ====== Employees Management ======
+
+    void addEmployee(Employee e) {
+        employees.push_back(e);
+    }
+
+    void getAllEmployees() {
+        for (int i = 0; i < employees.size(); i++) {
+            employees[i].display();
+            cout << "------------------\n";
+        }
+    }
+
+    void removeAllEmployees() {
+        employees.clear();
     }
 };
 

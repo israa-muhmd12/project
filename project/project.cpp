@@ -10,7 +10,7 @@ using namespace std;
 class Validation {
 public:
     static bool isValidName(string name) {
-        if (name.length() < 5 || name.length() > 20) return false;
+        if (name.length() < 3 || name.length() > 20) return false;
         for (char c : name) {
             if (!isalpha(c)) return false;
         }
@@ -62,9 +62,12 @@ public:
     string getPassword() { return password; }
 
     virtual void display() {
-        cout << "ID: " << id << "\nName: " << name << endl;
+        cout << "ID: " << id << "\n"
+            << "Name " << name << "\n"
+            << "Password" << password << "\n";
     }
-};
+    virtual ~ Person () {}
+}; 
 
 class Client : public Person {
 private:
@@ -87,10 +90,11 @@ public:
     }
 
     bool withdraw(double amount) {
-        if (amount > 0 && amount <= balance) {
+        if (amount > 0 && (balance - amount >= 1500) {
             balance -= amount;
             return true;
         }
+        cout << "Cannot withdraw . Minimum balance is 1500 \n "
         return false;
     }
 
@@ -100,6 +104,9 @@ public:
             return true;
         }
         return false;
+    }
+    void checkBalance() {
+        cout << "Current Balance : " << balance << "\n";
     }
 
     void display() override {
@@ -130,6 +137,8 @@ public:
         c.setBalance(stod(data[3]));
         return c;
     }
+    static Person parseToEmployee(string line); 
+    static Person parseToAdmin(string line);
 };
 
 class FilesHelper {
@@ -152,13 +161,48 @@ public:
         file.close();
         return clients;
     }
+    static void saveEmployee(int id, string name, string password, double salary
+        string fileName = "Employees.txt") {
+        ofstream file(fileName, ios::app);
+        if (file.is_open())
+            file << id << "|" << name << "|" << password << "|" << salary << "\n"; 
+    }
+    static vector<vector<string>> getRawLines(string fileName) {
+        vector<vector<string>> result;
+        ifstream file(fileName);
+        string line;
+        while (getline(file, line)) {
+            if (!line.empty()) {
+                result.push_back(Parser::split(line));
+            }
+        }
+        return result;
+    }
+
+    static void clearFile(string fileName) {
+        ofstream file(fileName, ios::trunc);
+    }
+
+  
+    static void updateClientInFile(int id, string name, string password, double balance) {
+        vector<Client> all = getClients();
+        clearFile("Clients.txt");
+        ofstream file("Clients.txt", ios::app);
+        for (auto& c : all) {
+            if (c.getId() == id) {
+                c.setName(name);
+                c.setPassword(password);
+                c.setBalance(balance);
+            }
+            file << c.getId() << "|" << c.getName() << "|"
+                << c.getPassword() << "|" << c.getBalance() << "\n";
+        }
+        cout << "Client updated in file.\n";
 };
 
 class Employee : public Person {
-protected:
-    int id;
-    string name;
-    string password;
+protected :
+    double salary; 
 
 public:
     Employee() : Person(), salary(0) {}
@@ -207,60 +251,112 @@ public:
     }
 
     void editClient(int id, string name, string password, double balance) {
-        cout << "Edit request for ID " << id << " received.\n";
+        FilesHelper::updateClientInFile(id, name, password, balance); 
     }
-    // ====== Clients Management ======
+} };
+class Admin : public Employee {
+private:
+    vector<Employee> employees;
 
-    void addClient(Client c) {
-        clients.push_back(c);
+public:
+    Admin() : Employee() {}
+    Admin(int id, string name, string password, double salary)
+        : Employee(id, name, password, salary) {
+    }
+
+    // ===== Clients Management =====
+    void addClient(Client& c) {
+        FilesHelper::saveClient(c);
+        cout << "Client added.\n";
     }
 
     Client* searchClient(int id) {
-        for (int i = 0; i < clients.size(); i++) {
-            if (clients[i].getId() == id)
-                return &clients[i];
-        }
+        vector<Client> all = FilesHelper::getClients();
+        for (auto& c : all)
+            if (c.getId() == id) return new Client(c);
         return nullptr;
     }
 
     void listClients() {
-        for (int i = 0; i < clients.size(); i++) {
-            clients[i].display();
-            cout << "------------------\n";
-        }
+        vector<Client> all = FilesHelper::getClients();
+        cout << "\n--- Clients List ---\n";
+        for (auto& c : all) { c.display(); cout << "---\n"; }
     }
 
-    void editClient(int id, string newName) {
-        Client* c = searchClient(id);
-        if (c != nullptr) {
-            c->setName(newName);
-        }
+ 
+    void editClient(int id, string name, string password, double balance) {
+        FilesHelper::updateClientInFile(id, name, password, balance);
     }
 
-    // ====== Employees Management ======
-
-    void addEmployee(Employee e) {
+    
+    void addEmployee(Employee& e) {
         employees.push_back(e);
+        FilesHelper::saveEmployee(e.getId(), e.getName(), e.getPassword(), e.getSalary());
+        cout << "Employee added.\n";
     }
 
-    void getAllEmployees() {
-        for (int i = 0; i < employees.size(); i++) {
-            employees[i].display();
-            cout << "------------------\n";
+    Employee* searchEmployee(int id) {
+        for (auto& e : employees)
+            if (e.getId() == id) return &e;
+        return nullptr;
+    }
+
+    void listEmployees() {
+        cout << "\n--- Employees List ---\n";
+        for (auto& e : employees) { e.display(); cout << "---\n"; }
+    }
+
+   
+    void editEmployee(int id, string name, string password, double salary) {
+        for (auto& e : employees) {
+            if (e.getId() == id) {
+                e.setName(name);
+                e.setPassword(password);
+                e.setSalary(salary);
+                cout << "Employee updated.\n";
+                return;
+            }
         }
+        cout << "Employee not found.\n";
     }
 
-    void removeAllEmployees() {
-        employees.clear();
+    void display() override {
+        Person::display();
+        cout << "Salary: " << salary << "\n";
     }
 };
 
+//==================== Main(Test) ====================
 int main() {
-    Employee emp(101, "AhmedEmp", "pass12345", 6000);
-    Client cl(500, "Nermeen", "clientPass123", 3000);
+    cout << "===== Employee Tests =====\n";
+    Employee emp(101, "Ahmed Ali", "pass12345", 6000);
+    emp.display();
 
+    Client cl(500, "Nermeen Salem", "clientPass123", 3000);
     emp.addClient(cl);
     emp.listClient();
 
-    return 0;
+    emp.editClient(500, "Nermeen Edited", "newPass123", 4000);
+    emp.listClient();
+
+    cout << "\n===== Client Tests =====\n";
+    Client c1(1, "Ali Hassan", "pass12345", 5000);
+    Client c2(2, "Sara Khaled", "pass67890", 2000);
+    c1.deposit(500);
+    c1.checkBalance();
+    c1.withdraw(300);
+    c1.checkBalance();
+    c1.transferTo(1000, c2);
+    c2.checkBalance();
+
+    c1.withdraw(999999);
+
+    cout << "\n===== Admin Tests =====\n";
+    Admin admin(1, "Boss Admin", "adminPass1", 15000);
+    admin.display();
+    Employee e2(2, "Omar Hassan", "omarPass1", 7000);
+    admin.addEmployee(e2);
+    admin.listEmployees();
+    admin.editEmployee(2, "Omar Edited", "newPass12", 8000);
+    admin.listEmployees();
 }

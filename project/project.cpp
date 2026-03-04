@@ -4,6 +4,9 @@
 #include <fstream>   
 #include <sstream>   
 #include <vector>
+#include "Admin.h"
+#include "FilesHelper.h"
+#include "Employee.h"
 
 using namespace std;
 
@@ -199,6 +202,73 @@ public:
         }
         cout << "Client updated in file.\n";
 };
+class Client {
+public:
+    int id;
+    string name;
+    string password;
+    double balance;
+
+    Client() {}
+    Client(int id, string name, string password, double balance) {
+        this->id = id;
+        this->name = name;
+        this->password = password;
+        this->balance = balance;
+    }
+
+    string toString() const {
+        stringstream ss;
+        ss << id << "," << name << "," << password << "," << balance;
+        return ss.str();
+    }
+
+    static Client fromString(string line) {
+        stringstream ss(line);
+        string temp;
+        vector<string> data;
+        while (getline(ss, temp, ',')) {
+            data.push_back(temp);
+        }
+        return Client(stoi(data[0]), data[1], data[2], stod(data[3]));
+    }
+};
+
+class DataSourceInterface {
+public:
+    virtual void addClient(Client c) = 0;
+    virtual vector<Client> getAllClients() = 0;
+    virtual void removeAllClients() = 0;
+};
+
+class FileManager : public DataSourceInterface {
+private:
+    string fileName = "clients.txt";
+public:
+    void addClient(Client c) {
+        ofstream file(fileName, ios::app);
+        file << c.toString() << endl;
+        file.close();
+    }
+
+    vector<Client> getAllClients() {
+        vector<Client> clients;
+        ifstream file(fileName);
+        string line;
+        while (getline(file, line)) {
+            if (line != "") {
+                clients.push_back(Client::fromString(line));
+            }
+        }
+        file.close();
+        return clients;
+    }
+
+    void removeAllClients() {
+        ofstream file(fileName, ios::trunc);
+        file.close();
+    }
+};
 
 class Employee : public Person {
 protected :
@@ -325,6 +395,100 @@ public:
         cout << "Salary: " << salary << "\n";
     }
 };
+void Admin::addEmployee(Employee& employee) {
+    employees.push_back(employee);
+    cout << "Employee added successfully.\n";
+}
+ Admin::searchEmployee(int id) {
+    for (int i = 0; i < employees.size(); i++) {
+        if (employees[i].getId() == id) {
+            return &employees[i];
+        }
+    }
+    return nullptr;
+}
+void Admin::editEmployee(int id, string name, string password, double salary) {
+
+    Employee* emp = searchEmployee(id);
+
+    if (emp != nullptr) {
+        emp->setName(name);
+        emp->setPassword(password);
+        emp->setSalary(salary);
+        cout << "Employee updated successfully.\n";
+    }
+    else {
+        cout << "Employee not found.\n";
+    }
+}
+
+void Admin::listEmployee() {
+
+    if (employees.empty()) {
+        cout << "No employees available.\n";
+        return;
+    }
+
+    for (int i = 0; i < employees.size(); i++) {
+        employees[i].display();
+    }
+
+class FilesHelper {
+public:
+    static std::vector<Employee> getEmployees();
+    static std::vector<Admin> getAdmins();
+};
+
+}
+
+vector<Employee> FilesHelper::getEmployees() {
+
+    vector<Employee> employees;
+
+    ifstream file("Employees.txt");
+    string line;
+
+    while (getline(file, line)) {
+
+        stringstream ss(line);
+        string id, name, password, salary;
+
+        getline(ss, id, ',');
+        getline(ss, name, ',');
+        getline(ss, password, ',');
+        getline(ss, salary, ',');
+
+        Employee emp(stoi(id), name, password, stod(salary));
+        employees.push_back(emp);
+    }
+
+    file.close();
+    return employees;
+}
+vector<Admin> FilesHelper::getAdmins() {
+
+    vector<Admin> admins;
+
+    ifstream file("Admins.txt");
+    string line;
+
+    while (getline(file, line)) {
+
+        stringstream ss(line);
+        string id, name, password, salary;
+
+        getline(ss, id, ',');
+        getline(ss, name, ',');
+        getline(ss, password, ',');
+        getline(ss, salary, ',');
+
+        Admin admin(stoi(id), name, password, stod(salary));
+        admins.push_back(admin);
+    }
+
+    file.close();
+    return admins;
+}
 
 //==================== Main(Test) ====================
 int main() {

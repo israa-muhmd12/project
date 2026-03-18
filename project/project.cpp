@@ -202,6 +202,98 @@ public:
         }
         cout << "Client updated in file.\n";
 };
+
+    class ClientManager {
+    public :
+        static void printClientMenu() {
+            cout << "\n===== Client Menu =====\n";
+            cout << "1. Deposit\n";
+            cout << "2. Withdraw\n";
+            cout << "3. Transfer\n";
+            cout << "4. Check Balance\n";
+            cout << "5. Update Password\n";
+            cout << "6. Logout\n";
+            cout << "=======================\n";
+            cout << "Choose: ";
+        }
+
+        static void updatePassword(Person* person) {
+            string newPass;
+            cout << "Enter new password: ";
+            cin >> newPass;
+            if (Validation::isValidPassword(newPass)) {
+                person->setPassword(newPass);
+                cout << "Password updated successfully.\n";
+            }
+            else {
+                cout << "Invalid password. Must be 8-20 chars, no spaces.\n";
+            }
+        }
+
+        static Client* login(int id, string password) {
+            vector<Client> clients = FilesHelper::getClients();
+            for (auto& c : clients)
+                if (c.getId() == id && c.getPassword() == password)
+                    return new Client(c);
+            return nullptr;
+        }
+
+        static bool clientOptions(Client* client) {
+            int choice;
+            printClientMenu();
+            cin >> choice;
+
+            switch (choice) {
+            case 1: {
+                double amount;
+                cout << "Enter deposit amount: ";
+                cin >> amount;
+                client->deposit(amount);
+                cout << "New balance: " << client->getBalance() << "\n";
+                break;
+            }
+            case 2: {
+                double amount;
+                cout << "Enter withdraw amount: ";
+                cin >> amount;
+                client->withdraw(amount);
+                break;
+            }
+            case 3: {
+                int toId;
+                double amount;
+                cout << "Enter recipient ID: ";
+                cin >> toId;
+                cout << "Enter amount: ";
+                cin >> amount;
+                vector<Client> all = FilesHelper::getClients();
+                bool found = false;
+                for (auto& c : all) {
+                    if (c.getId() == toId) {
+                        client->transferTo(amount, c);
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) cout << "Recipient not found.\n";
+                break;
+            }
+            case 4:
+                client->checkBalance();
+                break;
+            case 5:
+                updatePassword(client);
+                break;
+            case 6:
+                cout << "Logging out...\n";
+                return false;
+            default:
+                cout << "Invalid choice.\n";
+            }
+            return true;
+        }
+    };
+};
 class Client {
 public:
     int id;
@@ -269,6 +361,7 @@ public:
         file.close();
     }
 };
+
 
 class Employee : public Person {
 protected :
@@ -489,6 +582,7 @@ vector<Admin> FilesHelper::getAdmins() {
     file.close();
     return admins;
 }
+
 
 //==================== Main(Test) ====================
 int main() {

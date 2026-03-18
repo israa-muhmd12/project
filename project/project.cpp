@@ -583,6 +583,314 @@ vector<Admin> FilesHelper::getAdmins() {
     return admins;
 }
 
+class Client {
+private:
+    int id;
+    string name;
+    string password;
+    double balance;
+
+public:
+    Client(int id, string name, string password, double balance) {
+        this->id = id;
+        this->name = name;
+        this->password = password;
+        this->balance = balance;
+    }
+
+    int getId() {
+        return id;
+    }
+
+    string getName() {
+        return name;
+    }
+
+    string getPassword() {
+        return password;
+    }
+
+    double getBalance() {
+        return balance;
+    }
+
+    void setName(string n) {
+        name = n;
+    }
+
+    void setPassword(string p) {
+        password = p;
+    }
+
+    void setBalance(double b) {
+        balance = b;
+    }
+
+    void display() {
+        cout << "ID: " << id << endl;
+        cout << "Name: " << name << endl;
+        cout << "Balance: " << balance << endl;
+    }
+};
+
+class EmployeeManager {
+
+private:
+    vector<Client> clients;
+
+public:
+
+    bool login() {
+        int id;
+        string pass;
+
+        cout << "Enter Employee ID: ";
+        cin >> id;
+
+        cout << "Enter Password: ";
+        cin >> pass;
+
+        if(id == 123 && pass == "123") {
+            cout << "Login Successful\n";
+            return true;
+        }
+
+        cout << "Invalid Login\n";
+        return false;
+    }
+
+    void printEmployeeMenu() {
+        cout << "\nEmployee Menu\n";
+        cout << "1. Add New Client\n";
+        cout << "2. List All Clients\n";
+        cout << "3. Search For Client\n";
+        cout << "4. Edit Client Info\n";
+        cout << "5. Logout\n";
+    }
+
+    void newClient() {
+        int id;
+        string name;
+        string pass;
+        double balance;
+
+        cout << "Enter Client ID: ";
+        cin >> id;
+
+        cout << "Enter Name: ";
+        cin >> name;
+
+        cout << "Enter Password: ";
+        cin >> pass;
+
+        cout << "Enter Balance: ";
+        cin >> balance;
+
+        Client c(id, name, pass, balance);
+        clients.push_back(c);
+
+        cout << "Client Added Successfully\n";
+    }
+
+    void listAllClients() {
+        if(clients.empty()) {
+            cout << "No Clients Found\n";
+            return;
+        }
+
+        for(int i = 0; i < clients.size(); i++) {
+            clients[i].display();
+            cout << "----------------\n";
+        }
+    }
+
+    void searchForClient() {
+        int id;
+        cout << "Enter Client ID: ";
+        cin >> id;
+
+        for(int i = 0; i < clients.size(); i++) {
+            if(clients[i].getId() == id) {
+                clients[i].display();
+                return;
+            }
+        }
+
+        cout << "Client Not Found\n";
+    }
+
+    void editClientInfo() {
+        int id;
+        cout << "Enter Client ID: ";
+        cin >> id;
+
+        for(int i = 0; i < clients.size(); i++) {
+
+            if(clients[i].getId() == id) {
+
+                string name;
+                string pass;
+                double balance;
+
+                cout << "Enter New Name: ";
+                cin >> name;
+
+                cout << "Enter New Password: ";
+                cin >> pass;
+
+                cout << "Enter New Balance: ";
+                cin >> balance;
+
+                clients[i].setName(name);
+                clients[i].setPassword(pass);
+                clients[i].setBalance(balance);
+
+                cout << "Client Updated Successfully\n";
+                return;
+            }
+        }
+
+        cout << "Client Not Found\n";
+    }
+
+    void employeeOptions() {
+
+        int choice;
+
+        do {
+
+            printEmployeeMenu();
+
+            cout << "Choose Option: ";
+            cin >> choice;
+
+            switch(choice) {
+
+                case 1:
+                    newClient();
+                    break;
+
+                case 2:
+                    listAllClients();
+                    break;
+
+                case 3:
+                    searchForClient();
+                    break;
+
+                case 4:
+                    editClientInfo();
+                    break;
+
+                case 5:
+                    cout << "Logout...\n";
+                    break;
+
+                default:
+                    cout << "Invalid Choice\n";
+            }
+
+        } while(choice != 5);
+    }
+};
+
+class Screens {
+public:
+
+    // Bank Name
+    static void bankName() {
+        cout << "===================================" << endl;
+        cout << "           BENSM Bank" << endl;
+        cout << "===================================" << endl;
+    }
+
+    // Welcome Screen
+    static void welcome() {
+        bankName();
+        cout << "Welcome to BENSM Bank System" << endl;
+        system("pause");
+    }
+
+    // Login Options
+    static void loginOptions() {
+        cout << "Login options:" << endl;
+        cout << "1- Client" << endl;
+        cout << "2- Employee" << endl;
+        cout << "3- Admin" << endl;
+        cout << "0- Exit" << endl;
+    }
+
+    // Invalid Choice
+    static void invalid(int choice) {
+        cout << "Invalid choice: " << choice << endl;
+        system("pause");
+    }
+
+    // Logout
+    static void logout() {
+        cout << "Thank you for using BENSM Bank" << endl;
+        system("pause");
+    }
+
+    // Login Screen
+    static void loginScreen(int choice) {
+
+        system("cls");   
+
+        switch (choice) {
+
+        case 1:
+            cout << "Client Screen" << endl;
+            system("pause");
+            break;
+
+        case 2:
+            cout << "Employee Screen" << endl;
+            system("pause");
+            break;
+
+        case 3:
+            cout << "Admin Screen" << endl;
+            system("pause");
+            break;
+
+        default:
+            invalid(choice);
+        }
+    }
+
+    // Run Application
+    static void runApp() {
+
+        welcome();
+
+        int choice;
+
+        do {
+            system("cls");   
+            loginOptions();
+
+            cout << "Enter Choice: ";
+            cin >> choice;
+
+            if (choice == 0) {
+                logout();
+                break;
+            }
+
+            loginScreen(choice);
+
+        } while (choice != 0);
+    }
+};
+
+int main() {
+
+    Screens::runApp();
+
+    return 0;
+}
+
 
 //==================== Main(Test) ====================
 int main() {
